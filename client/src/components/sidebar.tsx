@@ -1,35 +1,38 @@
 import { Building, FileText, BarChart3, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link, useLocation } from "wouter";
 
 interface SidebarProps {
   activeItem?: string;
 }
 
 export function Sidebar({ activeItem = "vendors" }: SidebarProps) {
+  const [location] = useLocation();
+  
   const menuItems = [
     {
       id: "vendors",
       label: "Vendor Management",
       icon: Building,
-      active: true,
+      href: "/",
     },
     {
       id: "agreements",
       label: "Agreements",
       icon: FileText,
-      active: false,
+      href: "/agreements",
     },
     {
       id: "risk",
       label: "Risk Analysis",
       icon: BarChart3,
-      active: false,
+      href: "/risk",
     },
     {
       id: "settings",
       label: "Settings",
       icon: Settings,
-      active: false,
+      href: "/settings",
     },
   ];
 
@@ -42,11 +45,11 @@ export function Sidebar({ activeItem = "vendors" }: SidebarProps) {
       <nav className="mt-6">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = item.id === activeItem;
+          const isActive = location === item.href || (location === "/" && item.id === "vendors");
           return (
-            <a
+            <Link
               key={item.id}
-              href="#"
+              href={item.href}
               className={cn(
                 "flex items-center px-6 py-3 transition-colors",
                 isActive
@@ -56,7 +59,7 @@ export function Sidebar({ activeItem = "vendors" }: SidebarProps) {
             >
               <Icon className="mr-3 h-5 w-5" />
               <span className={isActive ? "font-medium" : ""}>{item.label}</span>
-            </a>
+            </Link>
           );
         })}
       </nav>

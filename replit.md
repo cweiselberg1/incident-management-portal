@@ -4,6 +4,15 @@
 
 This is a full-stack vendor management application built with React and Express.js. The system helps businesses manage vendor relationships, track business associate agreements (BAAs), store vendor documentation, and monitor risk assessments. It provides a dashboard interface for viewing vendor statistics and managing vendor profiles with document upload capabilities.
 
+## Recent Changes: Latest modifications with dates
+
+### January 30, 2025
+- Added functional Agreements page with navigation
+- Created agreement management interface showing all vendor agreements
+- Added filtering and search capabilities for agreements
+- Implemented proper routing between Vendor Management and Agreements sections
+- Fixed TypeScript issues in storage layer for proper type safety
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

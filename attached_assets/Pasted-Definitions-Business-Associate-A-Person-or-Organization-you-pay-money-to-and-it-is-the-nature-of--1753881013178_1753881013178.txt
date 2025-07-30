@@ -1,0 +1,26 @@
+Definitions:
+Business Associate - A Person or Organization you pay money to and it is the nature of the task you pay them for that includes an inherent disclosure of PHI. These folks need to sign a BAA with you, A Business Associate Agreement. 
+
+Regular vendors - A Person (Always an individual, as opposed to the BAA, which is always a company) who you are not paying for a task that carries an inherent disclosure of PHI with it, but due to the nature of the task, inadvertent disclosure MAY occur - You want these people to sign a confidentiality agreement to ensure any PHI they come across stays securely with them when they leave your campus. 
+
+Business Associate Agreement - Lays out the requirements for a legitimate and legal business associate relationship to occur. This is a federal requirement, intended to rein place BEFORE any sharing of PHI occurs. 
+
+Confidentiality Agreement - A document for ‘Regular Vendors’ that ensures IF they are exposed to PHI, they will not disclose this off your campus. 
+
+Using this Page:
+1. Your first step when coming to this part of the tool is to build profiles for the 3rd party.
+    1. You do this by clicking the ‘+Add Vendor’ button found in the upper-right of the page.
+    2. A pop up shows after hitting ‘+Add Vendor’. You will want to fill in the open fields seen to the best of your ability, especially the email address, since you can execute necessary agreements from the Tool. Open fields are:
+        1. Vendor name
+        2. Vendor Address
+        3. Vendor phone number 
+        4. Contact person name 
+        5. Contact email 
+        6. Agreement Type (CA or BAA)
+        7. Agreement action:
+            1. Send a completely new agreement for e-signature.
+            2. Upload an existing, signed agreement. 
+            3. Skip ‘agreement’ for now.
+        8. Finally, hit Create Vendor - The button in blue to the bottom-right. 
+            1. If you elected to send a completely new agreement for e-signature, your agreement is emailed to your Contact person at the other company as soon as you hit this key. 
+    3. Send a Vendor Risk Analysis Questionnaire as required by HIPAA law directly from the tool from the left-hand side of the screen, marked, “Risk Analysis”

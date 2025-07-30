@@ -1,5 +1,6 @@
-import { type User, type InsertUser, type Vendor, type InsertVendor, type Document, type InsertDocument } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { users, vendors, documents, type User, type InsertUser, type Vendor, type InsertVendor, type Document, type InsertDocument } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -21,110 +22,88 @@ export interface IStorage {
   deleteDocument(id: string): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private vendors: Map<string, Vendor>;
-  private documents: Map<string, Document>;
-
-  constructor() {
-    this.users = new Map();
-    this.vendors = new Map();
-    this.documents = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   // Vendor methods
   async getVendors(): Promise<Vendor[]> {
-    return Array.from(this.vendors.values()).sort((a, b) => 
-      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-    );
+    return await db.select().from(vendors).orderBy(desc(vendors.createdAt));
   }
 
   async getVendor(id: string): Promise<Vendor | undefined> {
-    return this.vendors.get(id);
+    const [vendor] = await db.select().from(vendors).where(eq(vendors.id, id));
+    return vendor || undefined;
   }
 
   async createVendor(insertVendor: InsertVendor): Promise<Vendor> {
-    const id = randomUUID();
-    const now = new Date();
-    const vendor: Vendor = { 
-      ...insertVendor,
-      agreementType: insertVendor.agreementType || null,
-      agreementStatus: insertVendor.agreementStatus || "pending",
-      riskStatus: insertVendor.riskStatus || "not_started",
-      id, 
-      createdAt: now,
-      updatedAt: now
-    };
-    this.vendors.set(id, vendor);
+    const [vendor] = await db
+      .insert(vendors)
+      .values(insertVendor)
+      .returning();
     return vendor;
   }
 
   async updateVendor(id: string, updates: Partial<InsertVendor>): Promise<Vendor | undefined> {
-    const vendor = this.vendors.get(id);
-    if (!vendor) return undefined;
-
-    const updatedVendor: Vendor = {
-      ...vendor,
-      ...updates,
-      updatedAt: new Date()
-    };
-    this.vendors.set(id, updatedVendor);
-    return updatedVendor;
+    const [vendor] = await db
+      .update(vendors)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(vendors.id, id))
+      .returning();
+    return vendor || undefined;
   }
 
   async deleteVendor(id: string): Promise<boolean> {
-    // Also delete associated documents
-    const vendorDocuments = Array.from(this.documents.values()).filter(doc => doc.vendorId === id);
-    vendorDocuments.forEach(doc => this.documents.delete(doc.id));
+    // Delete associated documents first
+    await db.delete(documents).where(eq(documents.vendorId, id));
     
-    return this.vendors.delete(id);
+    // Delete vendor
+    const result = await db.delete(vendors).where(eq(vendors.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   // Document methods
   async getDocumentsByVendor(vendorId: string): Promise<Document[]> {
-    return Array.from(this.documents.values())
-      .filter(doc => doc.vendorId === vendorId)
-      .sort((a, b) => new Date(b.uploadedAt || 0).getTime() - new Date(a.uploadedAt || 0).getTime());
+    return await db
+      .select()
+      .from(documents)
+      .where(eq(documents.vendorId, vendorId))
+      .orderBy(desc(documents.uploadedAt));
   }
 
   async getDocument(id: string): Promise<Document | undefined> {
-    return this.documents.get(id);
+    const [document] = await db.select().from(documents).where(eq(documents.id, id));
+    return document || undefined;
   }
 
   async createDocument(insertDocument: InsertDocument): Promise<Document> {
-    const id = randomUUID();
-    const document: Document = {
-      ...insertDocument,
-      status: insertDocument.status || "active",
-      fileSize: insertDocument.fileSize || null,
-      id,
-      uploadedAt: new Date()
-    };
-    this.documents.set(id, document);
+    const [document] = await db
+      .insert(documents)
+      .values(insertDocument)
+      .returning();
     return document;
   }
 
   async deleteDocument(id: string): Promise<boolean> {
-    return this.documents.delete(id);
+    const result = await db.delete(documents).where(eq(documents.id, id));
+    return (result.rowCount || 0) > 0;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

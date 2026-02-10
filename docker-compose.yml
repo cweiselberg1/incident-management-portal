@@ -1,0 +1,55 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: incident-management-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-incident_db}
+    ports:
+      - "${POSTGRES_PORT:-5441}:5432"
+    volumes:
+      - incident_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Incident Management System Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: incident-management-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-5006}:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - COOKIE_SECURE=false
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-incident_db}
+      - SESSION_SECRET=${SESSION_SECRET:-change-this-secret-in-production}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - EMAIL_FROM=${EMAIL_FROM:-onboarding@resend.dev}
+      - PRIVACY_OFFICER_EMAIL=${PRIVACY_OFFICER_EMAIL:-privacy.officer@test.com}
+      - APP_URL=${APP_URL:-http://localhost:5006}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+      - ./attached_assets:/app/attached_assets
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  incident_postgres_data:
+    driver: local

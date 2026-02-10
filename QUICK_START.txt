@@ -1,0 +1,56 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                 INCIDENT MANAGEMENT PORTAL                           ║
+║           Quick Start - portal.oneguyconsulting.com                  ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+✅ DONE (Automated - 90% Complete):
+  • Application built and optimized
+  • Files deployed to FastComet server: ~/portal-incident
+  • 485 dependencies installed
+  • PM2 process manager ready
+  • Environment configured
+
+⏰ NEXT: 5 Quick Steps (15 minutes):
+
+  1️⃣  Create Database (5 min)
+      → Go to: https://supabase.com
+      → Create project: "incident-management"
+      → Run SQL from: supabase-init.sql
+      → Copy connection string
+
+  2️⃣  Configure App (2 min)
+      → ssh oneguyco@nw69.fcomet.com
+      → cd ~/portal-incident
+      → nano .env
+      → Add: DATABASE_URL=<your-connection-string>
+
+  3️⃣  Start App (1 min)
+      → pm2 start dist/index.js --name incident-portal
+      → pm2 save
+      → pm2 startup
+
+  4️⃣  Setup Subdomain (5 min)
+      → Login: https://cloud.fastcomet.com
+      → Create subdomain: portal.oneguyconsulting.com
+      → Setup Node.js app → portal-incident
+      → Enable SSL
+
+  5️⃣  Test It! (2 min)
+      → Visit: https://portal.oneguyconsulting.com
+      → Login: cweiselberg1@gmail.com / TestPassword123!
+      → Report test incident
+      → Verify dashboard works
+
+📚 Documentation:
+  • Full guide: FINAL_SETUP_STEPS.md
+  • Summary: DEPLOYMENT_COMPLETE.md
+  • SQL script: supabase-init.sql
+
+🎯 What You Get:
+  ✓ Secure incident reporting portal
+  ✓ Anonymous reporting option
+  ✓ Dashboard for all users
+  ✓ Privacy officer tools
+  ✓ No illogical PHI column!
+
+Ready to complete? Start here: https://supabase.com

@@ -1,4 +1,4 @@
-import { Building, FileText, BarChart3, Settings } from "lucide-react";
+import { AlertTriangle, Plus, BarChart3, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "wouter";
 
@@ -6,27 +6,21 @@ interface SidebarProps {
   activeItem?: string;
 }
 
-export function Sidebar({ activeItem = "vendors" }: SidebarProps) {
+export function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
   const [location] = useLocation();
-  
+
   const menuItems = [
     {
-      id: "vendors",
-      label: "Vendor Management",
-      icon: Building,
+      id: "dashboard",
+      label: "Incidents",
+      icon: AlertTriangle,
       href: "/",
     },
     {
-      id: "agreements",
-      label: "Agreements",
-      icon: FileText,
-      href: "/agreements",
-    },
-    {
-      id: "risk",
-      label: "Risk Analysis",
-      icon: BarChart3,
-      href: "/risk",
+      id: "report",
+      label: "Report Incident",
+      icon: Plus,
+      href: "/report",
     },
     {
       id: "settings",
@@ -39,13 +33,13 @@ export function Sidebar({ activeItem = "vendors" }: SidebarProps) {
   return (
     <div className="w-64 bg-white shadow-lg border-r border-slate-200">
       <div className="p-6 border-b border-slate-200">
-        <h1 className="text-xl font-bold text-slate-800">One Guy Consulting</h1>
-        <p className="text-sm text-slate-500 mt-1">Vendor Management</p>
+        <h1 className="text-xl font-bold text-slate-800">HIPAA Compliance</h1>
+        <p className="text-sm text-slate-500 mt-1">Incident Management</p>
       </div>
       <nav className="mt-6">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location === item.href || (location === "/" && item.id === "vendors");
+          const isActive = location === item.href || (location === "/" && item.id === "dashboard");
           return (
             <Link
               key={item.id}

@@ -1,0 +1,590 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Guy Consulting - Vendor Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans">
+    <!-- @COMPONENT: Layout [Main application layout with sidebar and content area] -->
+    <div class="flex h-screen bg-slate-50">
+        <!-- @COMPONENT: Sidebar [Navigation sidebar] -->
+        <div class="w-64 bg-white shadow-lg border-r border-slate-200">
+            <div class="p-6 border-b border-slate-200">
+                <h1 class="text-xl font-bold text-slate-800">One Guy Consulting</h1>
+                <p class="text-sm text-slate-500 mt-1">Vendor Management</p>
+            </div>
+            <nav class="mt-6">
+                <a href="#" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 border-r-2 border-blue-600">
+                    <i class="fas fa-building mr-3"></i>
+                    <span class="font-medium">Vendor Management</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50">
+                    <i class="fas fa-file-contract mr-3"></i>
+                    <span>Agreements</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    <span>Risk Analysis</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50">
+                    <i class="fas fa-cog mr-3"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainContent [Main content area] -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- @COMPONENT: Header [Top header with actions] -->
+            <header class="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Vendor Management</h2>
+                        <p class="text-slate-600 mt-1">Manage vendor profiles, agreements, and documentation</p>
+                    </div>
+                    <button onclick="toggleCreateVendorModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 shadow-sm">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Vendor
+                    </button>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: Header -->
+
+            <!-- @COMPONENT: Dashboard [Main dashboard content] -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i class="fas fa-building text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-slate-600">Total Vendors</p>
+                                <p class="text-2xl font-bold text-slate-900" data-bind="stats.totalVendors">12</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-emerald-100 rounded-lg">
+                                <i class="fas fa-check-circle text-emerald-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-slate-600">Signed BAAs</p>
+                                <p class="text-2xl font-bold text-slate-900" data-bind="stats.signedBAAs">8</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-amber-100 rounded-lg">
+                                <i class="fas fa-clock text-amber-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-slate-600">Pending</p>
+                                <p class="text-2xl font-bold text-slate-900" data-bind="stats.pendingBAAs">3</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-slate-600">Expiring Soon</p>
+                                <p class="text-2xl font-bold text-slate-900" data-bind="stats.expiringSoon">1</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vendors Table -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-slate-800">Vendor Directory</h3>
+                            <div class="flex items-center space-x-3">
+                                <div class="relative">
+                                    <input type="text" placeholder="Search vendors..." class="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i>
+                                </div>
+                                <select class="border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>All Status</option>
+                                    <option>Active</option>
+                                    <option>Pending</option>
+                                    <option>Expired</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Vendor</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Agreement Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Risk Assessment</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Last Updated</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-200">
+                                <!-- @MAP: vendors.map(vendor => ( -->
+                                <tr class="hover:bg-slate-50" data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <span class="text-blue-600 font-medium">AC</span>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-slate-900" data-bind="vendor.name">ACME Cloud Solutions</div>
+                                                <div class="text-sm text-slate-500" data-bind="vendor.address">123 Tech Way, San Francisco, CA</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-slate-900" data-bind="vendor.contactName">John Smith</div>
+                                        <div class="text-sm text-slate-500" data-bind="vendor.contactEmail">john.smith@acme.com</div>
+                                        <div class="text-sm text-slate-500" data-bind="vendor.contactPhone">(555) 123-4567</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800" data-bind="vendor.agreementStatus">
+                                            Signed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800" data-bind="vendor.riskStatus">
+                                            Completed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500" data-bind="vendor.lastUpdated">
+                                        Jan 15, 2024
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3" data-event="click:editVendor">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-slate-600 hover:text-slate-900 mr-3" data-event="click:viewDocuments">
+                                            <i class="fas fa-folder"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900" data-event="click:deleteVendor">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-slate-50" data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                                <span class="text-purple-600 font-medium">DS</span>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-slate-900">DataSecure Inc</div>
+                                                <div class="text-sm text-slate-500">456 Security Blvd, Austin, TX</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-slate-900">Sarah Johnson</div>
+                                        <div class="text-sm text-slate-500">sarah.j@datasecure.com</div>
+                                        <div class="text-sm text-slate-500">(555) 987-6543</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
+                                            Pending
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-800">
+                                            Not Started
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                        Jan 10, 2024
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-slate-600 hover:text-slate-900 mr-3">
+                                            <i class="fas fa-folder"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-slate-50" data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                                <span class="text-green-600 font-medium">CH</span>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-slate-900">CloudHealth Systems</div>
+                                                <div class="text-sm text-slate-500">789 Medical Dr, Boston, MA</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-slate-900">Michael Chen</div>
+                                        <div class="text-sm text-slate-500">m.chen@cloudhealth.com</div>
+                                        <div class="text-sm text-slate-500">(555) 456-7890</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                            Expired
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
+                                            Approved
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                        Dec 20, 2023
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-slate-600 hover:text-slate-900 mr-3">
+                                            <i class="fas fa-folder"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP )) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+            <!-- @END_COMPONENT: Dashboard -->
+        </div>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+    <!-- @END_COMPONENT: Layout -->
+
+    <!-- @COMPONENT: CreateVendorModal [Modal for creating new vendors] -->
+    <div id="createVendorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" onclick="closeModalOnBackdrop(event)">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="px-6 py-4 border-b border-slate-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-slate-800">Add New Vendor</h3>
+                        <button onclick="toggleCreateVendorModal()" class="text-slate-400 hover:text-slate-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <form class="p-6 space-y-6" data-event="submit:createVendor">
+                    <!-- Basic Information -->
+                    <div class="space-y-4">
+                        <h4 class="text-md font-medium text-slate-700">Basic Information</h4>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Vendor Name *</label>
+                            <input type="text" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter vendor company name" data-bind="form.vendorName">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Vendor Address *</label>
+                            <textarea required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Enter full business address" data-bind="form.vendorAddress"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Vendor Phone Number *</label>
+                            <input type="tel" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="(555) 123-4567" data-bind="form.vendorPhone">
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="space-y-4">
+                        <h4 class="text-md font-medium text-slate-700">Primary Contact</h4>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Contact Person Name *</label>
+                            <input type="text" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter primary contact name" data-bind="form.contactName">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Contact Email *</label>
+                            <input type="email" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="contact@vendor.com" data-bind="form.contactEmail">
+                        </div>
+                    </div>
+
+                    <!-- Agreement Type -->
+                    <div class="space-y-4">
+                        <h4 class="text-md font-medium text-slate-700">Agreement Management</h4>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Agreement Type</label>
+                            <select class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" data-bind="form.agreementType">
+                                <option value="">Select agreement type</option>
+                                <option value="baa">Business Associate Agreement</option>
+                                <option value="confidentiality">Confidentiality Agreement</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Agreement Status</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="radio" name="agreementStatus" value="new" class="text-blue-600 focus:ring-blue-500" data-bind="form.agreementStatus">
+                                    <span class="ml-2 text-sm text-slate-700">Send new agreement for e-signature</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="agreementStatus" value="existing" class="text-blue-600 focus:ring-blue-500" data-bind="form.agreementStatus">
+                                    <span class="ml-2 text-sm text-slate-700">Upload existing signed agreement</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Section (conditionally shown) -->
+                    <div id="fileUploadSection" class="space-y-4 hidden">
+                        <h4 class="text-md font-medium text-slate-700">Document Upload</h4>
+                        <div class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 mb-2"></i>
+                            <p class="text-sm text-slate-600 mb-2">Drag and drop your signed agreement here, or</p>
+                            <input type="file" id="agreementFile" class="hidden" accept=".pdf,.doc,.docx" data-implementation="Handle file upload">
+                            <button type="button" onclick="document.getElementById('agreementFile').click()" class="text-blue-600 hover:text-blue-700 font-medium">
+                                browse files
+                            </button>
+                            <p class="text-xs text-slate-500 mt-2">PDF, DOC, DOCX up to 10MB</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-200">
+                        <button type="button" onclick="toggleCreateVendorModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200">
+                            <i class="fas fa-save mr-2"></i>
+                            Create Vendor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: CreateVendorModal -->
+
+    <!-- @COMPONENT: DocumentModal [Modal for viewing vendor documents] -->
+    <div id="documentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" onclick="closeModalOnBackdrop(event)">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="px-6 py-4 border-b border-slate-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-slate-800">Vendor Documents</h3>
+                        <button onclick="toggleDocumentModal()" class="text-slate-400 hover:text-slate-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Document Actions -->
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="text-md font-medium text-slate-700">ACME Cloud Solutions - Documents</h4>
+                        <div class="space-x-3">
+                            <button class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload Document
+                            </button>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Send for Signature
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Documents List -->
+                    <div class="space-y-4">
+                        <!-- Agreement Document -->
+                        <div class="border border-slate-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="p-2 bg-red-100 rounded-lg mr-4">
+                                        <i class="fas fa-file-pdf text-red-600"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-medium text-slate-900">Business Associate Agreement</h5>
+                                        <p class="text-xs text-slate-500">Signed on January 15, 2024 • 245 KB</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
+                                        Executed
+                                    </span>
+                                    <button class="text-slate-600 hover:text-slate-900" data-implementation="Download document">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="text-slate-600 hover:text-slate-900" data-implementation="View document">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Assessment Document -->
+                        <div class="border border-slate-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="p-2 bg-blue-100 rounded-lg mr-4">
+                                        <i class="fas fa-file-alt text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-medium text-slate-900">Vendor Risk Assessment</h5>
+                                        <p class="text-xs text-slate-500">Completed on January 10, 2024 • 156 KB</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        Completed
+                                    </span>
+                                    <button class="text-slate-600 hover:text-slate-900">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="text-slate-600 hover:text-slate-900">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Insurance Certificate -->
+                        <div class="border border-slate-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="p-2 bg-purple-100 rounded-lg mr-4">
+                                        <i class="fas fa-shield-alt text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-medium text-slate-900">Insurance Certificate</h5>
+                                        <p class="text-xs text-slate-500">Uploaded on December 5, 2023 • 892 KB</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
+                                        Valid
+                                    </span>
+                                    <button class="text-slate-600 hover:text-slate-900">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="text-slate-600 hover:text-slate-900">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Assessment Questionnaire Section -->
+                    <div class="mt-8 p-4 bg-slate-50 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h5 class="text-sm font-medium text-slate-900">Vendor Risk Analysis Questionnaire</h5>
+                                <p class="text-xs text-slate-500 mt-1">Security posture assessment for vendor evaluation</p>
+                            </div>
+                            <div class="space-x-2">
+                                <button class="px-3 py-1.5 text-sm border border-slate-300 rounded text-slate-700 hover:bg-slate-100" data-implementation="Create new questionnaire">
+                                    Create New
+                                </button>
+                                <button class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" data-implementation="Send existing questionnaire">
+                                    Send Questionnaire
+                                </button>
+                            </div>
+                        </div>
+                        <!-- @FUNCTIONALITY: This section should implement questionnaire creation, editing, and sending functionality -->
+                        <div class="mt-3 text-xs text-slate-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Coming soon: Full questionnaire management system with custom security assessment forms
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: DocumentModal -->
+
+    <script>
+        // Modal functionality
+        (function() {
+            // @STATE: modals:object = { createVendor: false, document: false }
+            
+            window.toggleCreateVendorModal = function() {
+                const modal = document.getElementById('createVendorModal');
+                modal.classList.toggle('hidden');
+                // TODO: Implement form reset when closing modal
+            };
+
+            window.toggleDocumentModal = function() {
+                const modal = document.getElementById('documentModal');
+                modal.classList.toggle('hidden');
+            };
+
+            window.closeModalOnBackdrop = function(event) {
+                if (event.target === event.currentTarget) {
+                    event.currentTarget.classList.add('hidden');
+                }
+            };
+
+            // Show/hide file upload section based on radio selection
+            document.addEventListener('change', function(e) {
+                if (e.target.name === 'agreementStatus') {
+                    const fileSection = document.getElementById('fileUploadSection');
+                    if (e.target.value === 'existing') {
+                        fileSection.classList.remove('hidden');
+                    } else {
+                        fileSection.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Form submission handling
+            document.addEventListener('submit', function(e) {
+                if (e.target.dataset.event === 'submit:createVendor') {
+                    e.preventDefault();
+                    // TODO: Implement vendor creation logic
+                    console.log('Creating vendor...', new FormData(e.target));
+                    toggleCreateVendorModal();
+                }
+            });
+
+            // Mock data for demonstration
+            // TODO: Replace with actual API calls and state management
+            
+        })();
+    </script>
+</body>
+</html>

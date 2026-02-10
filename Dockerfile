@@ -46,15 +46,15 @@ COPY --from=builder /app/uploads ./uploads
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 
 # Expose the application port
-EXPOSE 5000
+EXPOSE 8080
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:5000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD node -e "require('http').get('http://localhost:8080/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Start the application
 CMD ["npm", "run", "start"]

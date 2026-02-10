@@ -1,0 +1,25 @@
+app = "incident-portal"
+primary_region = "sjc"
+
+[build]
+  [build.args]
+    NODE_VERSION = "18"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+  COOKIE_SECURE = "true"
+  EMAIL_FROM = "incidents@oneguyconsulting.com"
+  PRIVACY_OFFICER_EMAIL = "cweiselberg1@gmail.com"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
